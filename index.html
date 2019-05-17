@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Api Connect</title>
+</head>
+
+<body>
+    <button onclick="getWeather()">Obtener Datos del Tiempo</button>
+    <section id="weather">
+
+    </section>
+
+    <button onclick="getDataNasa()">Obtener Datos Nasa</button>
+    <section id="photos-nasa">
+
+    </section>
+</body>
+<script>
+
+    function getWeather(){
+        fetch('https://api.openweathermap.org/data/2.5/weather?q=Sucre,bo&lang=es&units=metric&APPID=bfefc0dea5a8a48a34f7f8de5ad61d79')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (weather) {
+
+                console.log(weather);
+
+                this.renderWeather(weather);
+
+            });
+    }
+
+    function renderWeather(weather) {
+        var template = `
+            <h3> ${weather.name},${weather.sys.country}</h3>  
+            <p>Temperatura Actual. ${weather.main.temp}℃ ${weather.weather[0].description},Temperatura Mín. ${weather.main.temp_min}℃,Temperatura Máx. ${weather.main.temp_max}℃<p>
+        `;
+        let contentPhoto = template;
+        let container = document.createElement("div");
+        container.innerHTML = contentPhoto;
+        document.getElementById('weather').appendChild(container);
+    }
+
+
+
+    // si quieres saber mas sobre fetch aqui
+    //https://developer.mozilla.org/es/docs/Web/API/Fetch_API/Utilizando_Fetch
+    function getDataNasa() {
+        fetch('https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&page=1&api_key=Y0VfUmf5Z2zbHV6uPcd2n5Du4y6xCIt3rfM0cGaO')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (nasaPhotos) {
+
+                var photos = null;
+                photos = nasaPhotos.photos;
+
+                this.renderPhotos(photos);
+
+            });
+    }
+
+
+    function renderPhotos(photos) {
+
+        photos.forEach((photo, id) => {
+            console.log(photo);
+            let contentPhoto = createContentPhotos(photo, id);
+            let container = document.createElement("div");
+            container.innerHTML = contentPhoto;
+            document.getElementById('photos-nasa').appendChild(container);
+        });
+    }
+
+
+    function createContentPhotos(photo, id) {
+        return `
+            <h3>Foto ${id}. Cámara ${photo.camera.full_name}</h3>  
+            <img width="400" src="${photo.img_src}"></img>
+        `;
+    }
+
+</script>
+
+</html>
